@@ -23,6 +23,7 @@ Image createSimpleImage(int width, int height)
 }
 
 
+// translations
 int main()
 {
 	Image image("simple.png");

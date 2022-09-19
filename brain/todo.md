@@ -1,0 +1,5 @@
+- translation
+- scaling
+- granular rotation
+- rgb to hsl/hsv/hsb
+- images from image folder

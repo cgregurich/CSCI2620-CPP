@@ -1,5 +1,0 @@
-- translation
-- simple rotation
-- scaling
-- granular rotation
-- rgb to hsl/hsv/hsb

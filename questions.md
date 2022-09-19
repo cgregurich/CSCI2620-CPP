@@ -1,8 +1,0 @@
-- memcpy
-- what are headers again?
-- c++ brace conventions
-- understand stbi_write_png function, esp last arg "stride"
-- ^^ and args for other image type str_write_* functions
-- understand code
-- write it from scratch??
-- TODO: change image struct to use a matrix where each value is an int representing RGB as one number (hex)
