@@ -1,16 +1,24 @@
 #include "Image.h"
+#include <string>
 #pragma once
 
 struct ImageCLI
 {
 	Image image;
-	ImageCLI(const char* filename);
-	ImageCLI(Image sourceImage);
+	std::string donePath; // Path of image to write changes to
+	ImageCLI(std::string filename, std::string donePath);
+	ImageCLI(Image sourceImage, std::string donePath);
 
-	void rotateCLI();
-	void rgbFilterCLI();
+	void save();
 
-	void applyRedFilter(int value);
-	void applyGreenFilter(int value);
-	void applyBlueFilter(int value);
+	void rotate();
+	void rgbFilter();
+	void translate();
+	void flip();
+	void scale();
+
+    void drawLine();
+    void drawRectOutline();
+    void drawRect();
+
 };
