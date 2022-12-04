@@ -145,46 +145,20 @@ Image makeTile(Image image, int tileSize)
     return cropped;
 }
 
-Image mockCollage()
-{
-    Image collage(30, 10, 4);
-    int TILES_VERTICAL = 1;
-    int TILES_HORIZONTAL = 3;
-    int tilePixelsWidth = 10;
-    int tilePixelsHeight = 10;
-
-    int pixelRows = TILES_VERTICAL * tilePixelsHeight;
-    int pixelCols = TILES_HORIZONTAL * tilePixelsWidth;
-    std::cout << "pixelRows: " << pixelRows << std::endl;
-    std::cout << "pixelCols: " << pixelCols << std::endl;
-
-    std::cout << "\ncollage: " << collage.width << "x" << collage.height << "x" << collage.channels << std::endl;
-
-    for (int r=0; r<pixelRows; r++)
-    {
-        for (int c=0; c<pixelCols; c++)
-        {
-            Color color(255, 0, 0, 255);
-            collage.setPixelColor(c, r, color);
-        }
-    }
-
-    return collage;
-}
 
 
-
-Image makeCollage(std::vector<Image> images)
+Image makeMosaic(std::vector<Image> images)
 {
     /*
     Collage consists of images. So a collage has a grid, which each "square" in 
     the grid, aka each tile, is an image which itself is a grid.
     Collage consists of tiles, tiles consist of pixels.
     */
+    Image mainImage("images/eiffel.png");
 
     // # of tiles that make up the collage
-    int TILES_HORIZONTAL = 3; 
-    int TILES_VERTICAL = 1; 
+    int TILES_HORIZONTAL = mainImage.height; 
+    int TILES_VERTICAL = mainImage.width; 
 
 
     // Assuming images are all exact same dimensions
@@ -194,13 +168,13 @@ Image makeCollage(std::vector<Image> images)
     int channels = images[0].channels;
 
 
-    int tilePixelsWidth = 10;
-    int tilePixelsHeight = 10;
+    int tilePixelsWidth = images[0].width;
+    int tilePixelsHeight = images[0].height;
 
 
-    Image collage(pixelsHorizontal, pixelsVertical, channels);
+    Image mosaic(pixelsHorizontal, pixelsVertical, channels);
 
-    // tileY and tileX is the coordinates of the tiles in the collage
+    // tileY and tileX is the coordinates of the tiles in the mosaic
     for (int tileY=0; tileY<TILES_VERTICAL; tileY++)
     {
         for (int tileX=0; tileX<TILES_HORIZONTAL; tileX++)
@@ -208,47 +182,37 @@ Image makeCollage(std::vector<Image> images)
             int imageIndex = tileY * TILES_HORIZONTAL + tileX;
             if (imageIndex >= images.size())
             {
-                return collage;
+                return mosaic;
             }
             Image image = images[imageIndex];
+            Color filter = mainImage.getPixelColor(tileX, tileY);
+            filter.alpha = 127;
             
             // tilePixelY and tilePixelX are the pixels relative to each tile
             // each tile will have pixels at the same coordinates
-            // i.e. even if it's the tile on the far right of the collage, the
+            // i.e. even if it's the tile on the far right of the mosaic, the
             // first pixel in the tile will still be at (0, 0)
             for (int tilePixelY=0; tilePixelY<tilePixelsHeight; tilePixelY++)
             {
                 for (int tilePixelX=0; tilePixelX<tilePixelsWidth; tilePixelX++)
                 {
-                    // x and y are the pixel coordinates in the overall collage
-                    // i.e. not relative to a tile, but to the collage image itself.
+                    // x and y are the pixel coordinates in the overall mosaic
+                    // i.e. not relative to a tile, but to the mosaic image itself.
                     int x = tileX * tilePixelsWidth + tilePixelX;
                     int y = tileY * tilePixelsHeight + tilePixelY;
-                    std::cout << "grabbing from (" << tilePixelX << ", " << tilePixelY << ")" << std::endl;
-                    Color color = image.getPixelColor(tilePixelX, tilePixelY);
+                    
+                    // Color color = image.getPixelColor(tilePixelX, tilePixelY);
+                    Color c = image.getPixelColor(tilePixelX, tilePixelY);
+                    Color blended = blendColors(filter, c);
 
-                    collage.setPixelColor(x, y, color);
+                    mosaic.setPixelColor(x, y, blended);
                 }
             }
         }
     }
-    return collage;
+    return mosaic;
 }
 
-void test()
-{
-    // int width = 10;
-    // int height = 10;
-    // Image image(width, height, 4);
-    // for (int y=0; y<height; y++)
-    // {
-    //     for (int x=0; x<width; x++)
-    //     {
-    //         Color color(255, 0, 0, 255);
-    //         image.setPixelColor(x, y, )
-    //     }
-    // }
-}
 
 Image threeChannelsToFourChannels(Image image)
 {
@@ -264,18 +228,30 @@ Image threeChannelsToFourChannels(Image image)
 
 }
 
+std::vector<Image> makeTiles(int count)
+{
+    std::vector<Image> images;
+    while (count--)
+    {
+        images.push_back(Image("images/eiffel.png"));
+    }
+    return images;
+}
+
 
 int main()
 {
 
-    std::vector<Image> images;
-    images.push_back(Image("images/tile4channels.png"));
-    images.push_back(Image("images/tile4channels.png"));
-    images.push_back(Image("images/tile4channels.png"));
-    
-    Image collage = makeCollage(images);
-    std::cout << "done" << std::endl;
-    collage.write("images/collage.png");
+    // threeChannelsToFourChannels(Image("images/eiffel.jpg")).write("images/eiffel.png");
+
+    // int dimensions = 100;
+    // std::vector<Image> images = makeTiles(dimensions * dimensions);
+    // Image mosaic = makeMosaic(images);
+    // std::cout << "done" << std::endl;
+    // mosaic.write("images/collage.png");
+    Image image("images/collage.png");
+    Kernel kernel;
+    kernel.ridge(image).write("images/kernel.png");
 
 
 	return 0;

@@ -32,3 +32,17 @@ realized that the kernels isn't supposed to be applied to the "value" (i.e. hsv)
 
 week of 11/13
 11/14: moved kernel code into its own kernel class.
+
+thanksgiving break
+spent time working on the basics of making a collage, ignoring the mosaic (i.e. color filter/layering) aspect.
+Just wanted to be able to take a collection of images, and lay them in a grid inside another image.
+This had some challenges. First I need to make sure that all the images are the same size. So I wrote functions to scale images to a given pixel width/height, and another one to crop the images to a certain width/height.
+For the most part, it works. There is some weirdness that happens sometimes when I try to scale to a certain pixel size, including rounding issues where I'll try to scale/crop an image to be, say, 400 pixels, and it will end up 401 or 399 pixels. I'm also not totally sure what the relationship between scaling and cropping is. Which one should be applied first? How much do I scale vs crop to get the desired image dimensions without cutting off the main content of the image? I pivoted away from these problems for a bit and started working on a function that creates a collage out of uniform, square images so I don't need to worry about the "off by one pixel" issue. This took a long time to do because of one interesting issue, and one not so interesting issue. The first one is that I was treating a 3-channel image as a 4-channel image without realizing it. The image I was writing to only had space for red, green, and blue values per pixel, yet when I was setting pixel colors, I was passing a color that also contains an alpha value. This led to a segmentation fault at some point in the process, because I would be writing past the end of the memory allotted for the collage image's pixel data. That was the interesting issue. I solved it (and was pretty proud about that fact) but it still didn't work. Long story short, I forgot that "rows" means the Y value, and "columns" means the X value, and spent way more time than I should've trying all sorts of things when really I just needed to check if I had my function arguments in the correct order. Once I fixed that, the collage function worked for uniform images. Now I just need to figure out a consistent way to crop and scale images so I can make a collage with any collection of images I want. Then I'll figure out the layering and color logic to make the mosaic.
+
+later. Got the mosaic filter thing to work. Wow. Now want to make it so I can more easily do it. rn I have to do the math manually: okay I have 10,000 100x100px tiles, which means my collage will be 100x100 tiles, and the image itself will be 10,000 pixels. And then the main image needs to be the same pixel dimensions as the collage's tile dimensions. i.e. in this case, main image would need to be 100x100 pixels. So each tile is mapped to a pixel in the main image, and then a blended color layer filter thing is applied.
+
+This filter is just the process of taking a pixel of the main image and blending that pixel color with each pixel in the tile.
+
+-----------------------
+for each pixel in main image, take the tile image, and blend each pixel in the tile with the main image's given pixel.
+Throw that tile into the collage
